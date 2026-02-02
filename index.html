@@ -3,288 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đang tải...</title>
+    <title>SYL (Retro Style)</title>
     <style>
-        /* --- CẤU HÌNH MÀU SẮC (THEME) --- */
-        :root {
-            --bg-body: #e3f2fd;       /* Màu nền tổng thể */
-            --bg-container: #ffffff;  /* Màu nền khung nội dung */
-            --text-main: #2c3e50;     /* Màu chữ chính */
-            --accent-color: #2980b9;  /* Màu điểm nhấn (Xanh biển) */
-            --accent-hover: #e74c3c;  /* Màu hover (Cam đỏ) */
-            --border-soft: #ecf0f1;   /* Đường kẻ mờ */
-            --shadow: 0 10px 25px rgba(41, 128, 185, 0.15); /* Bóng mờ */
+        /* --- THIẾT LẬP CHUNG (RESET CSS) --- */
+        html, body {
+            height: 100%; /* Bắt buộc để giả lập frameset */
+            margin: 0;
+            padding: 0;
+            background-color: #F5F5DC; /* Màu nền vàng kem đặc trưng của trang gốc */
+            color: #333; /* Màu chữ tối */
+            /* Sử dụng font có chân (Serif) để giống trang gốc và hỗ trợ tốt tiếng Việt.
+               Ưu tiên Times New Roman, sau đó đến các font mặc định của hệ thống.
+            */
+            font-family: "Times New Roman", Times, serif;
+            font-size: 14px; /* Cỡ chữ nhỏ kiểu cũ */
+            overflow: hidden; /* Ẩn thanh cuộn của body chính */
         }
 
-        /* --- PHONG CÁCH CHUNG --- */
-        body { 
-            font-family: "Segoe UI", "Tahoma", sans-serif;
-            font-size: 15px; line-height: 1.7; 
-            color: var(--text-main); 
-            background-color: var(--bg-body); 
-            margin: 0; padding: 40px 20px;
-            background-image: linear-gradient(to bottom, #e3f2fd, #fdfbf7);
-            min-height: 100vh;
+        a {
+            color: #0000EE; /* Màu link xanh cổ điển */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #FF0000;
         }
 
-        a { color: var(--accent-color); text-decoration: none; transition: 0.2s; font-weight: 500; }
-        a:hover { color: var(--accent-hover); }
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
         
-        /* --- KHUNG CHÍNH (CONTAINER) --- */
-        .container { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            background: var(--bg-container); 
-            border-radius: 12px; 
-            /* Lưu ý: Bỏ padding ở đây để ảnh tràn viền */
-            padding: 0; 
-            min-height: 80vh; 
-            box-shadow: var(--shadow); 
-            overflow: hidden; /* Để bo tròn góc cả ảnh */
-            display: block; /* Đổi từ Flex sang Block để xếp dọc */
+        h2, h3 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
-        /* --- [MỚI] ẢNH BÌA (HEADER BANNER) --- */
-        .site-banner {
+        /* --- CẤU TRÚC GIẢ LẬP FRAMESET (LAYOUT) --- */
+        .frameset-container {
+            display: flex; /* Sử dụng Flexbox để chia cột */
+            height: 100%; /* Chiều cao full màn hình */
             width: 100%;
-            height: 350px; /* Chiều cao ảnh bìa */
-            object-fit: cover; /* Tự động cắt ảnh cho vừa khung */
-            border-bottom: 5px solid var(--accent-color); /* Đường kẻ ngăn cách */
-            display: block;
         }
 
-        /* --- [MỚI] PHẦN THÂN TRANG WEB (Gồm Menu + Nội dung) --- */
-        .body-wrapper {
-            display: flex; /* Dùng Flexbox để chia cột lại ở đây */
-            padding: 40px; /* Đẩy nội dung vào trong */
-        }
-        
-        /* --- CỘT TRÁI (MENU) --- */
-        aside { 
-            width: 240px; 
-            padding-right: 30px; 
-            border-right: 1px solid var(--border-soft); 
-            flex-shrink: 0; 
-        }
-        
-        aside h3 { 
-            font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 2px solid var(--accent-color); padding-bottom: 5px;
-            margin-bottom: 15px; color: var(--accent-color); margin-top: 30px;
+        /* Khung bên trái (Menu) */
+        .frame-menu {
+            width: 180px; /* Chiều rộng cố định giống trang gốc */
+            flex-shrink: 0; /* Không bị co lại */
+            height: 100%;
+            overflow-y: auto; /* Cho phép cuộn dọc độc lập */
+            border-right: 2px solid #8B4513; /* Đường viền nâu ngăn cách */
+            padding: 15px;
+            box-sizing: border-box;
+            background-color: #F5F5DC;
         }
 
-        aside ul { list-style: none; padding-left: 0; margin-bottom: 20px; }
-        aside li { margin-bottom: 8px; padding-left: 10px; border-left: 3px solid transparent; transition: 0.2s; }
-        aside li:hover { border-left: 3px solid var(--accent-hover); background-color: #fafafa; }
-        
-        #btn-continue { display: none; background: #fff8e1; color: #f39c12; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 25px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #fae5d3; }
-        
-        /* --- CỘT PHẢI (NỘI DUNG) --- */
-        main { flex-grow: 1; padding-left: 40px; position: relative; }
+        /* Khung bên phải (Nội dung chính) */
+        .frame-main {
+            flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+            height: 100%;
+            overflow-y: auto; /* Cho phép cuộn dọc độc lập */
+            padding: 20px 30px;
+            box-sizing: border-box;
+            background-color: #F5F5DC;
+        }
 
-        .section-header { font-size: 22px; color: var(--accent-color); margin: 0 0 20px 0; font-weight: 300; border-bottom: 1px solid var(--border-soft); padding-bottom: 10px; }
-        .log-box { height: 160px; overflow-y: scroll; background: #f8f9fa; border-radius: 6px; border: 1px solid var(--border-soft); padding: 15px; font-size: 13px; margin-bottom: 30px; font-family: Consolas, monospace; color: #555; }
-        .log-item { border-bottom: 1px dashed #ddd; padding: 4px 0; }
+        /* --- CÁC YẾU TỐ TRANG TRÍ ĐẶC TRƯNG --- */
         
-        .novel-list-item { margin-bottom: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid var(--border-soft); transition: 0.2s; }
-        .novel-list-item:hover { border-color: var(--accent-color); background-color: #fbfdff; }
-        .novel-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
-        .novel-desc { font-size: 14px; color: #7f8c8d; line-height: 1.5; }
-        
-        .diary-entry { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-soft); }
-        .diary-date { background: var(--accent-color); color: #fff; padding: 4px 10px; font-weight: bold; display: inline-block; font-size: 12px; border-radius: 20px; }
-        .diary-content { margin-top: 15px; text-align: justify; white-space: pre-wrap; color: #444; }
-        
-        .view-section { display: none; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Đường kẻ ngang nét đứt màu nâu */
+        .dashed-line {
+            border: none;
+            border-top: 1px dashed #8B4513;
+            margin: 15px 0;
+        }
 
-        .chapter-title { text-align: center; font-size: 26px; color: var(--accent-color); margin-bottom: 40px; font-weight: normal; }
-        .chapter-content { font-size: 18px; line-height: 1.9; text-align: justify; margin-bottom: 50px; white-space: pre-wrap; color: #222; }
-        
-        .nav-buttons { display: flex; justify-content: space-between; margin: 30px 0; padding-top: 20px; border-top: 1px dashed #ddd; }
-        .btn { background: #fff; border: 1px solid var(--accent-color); padding: 8px 20px; font-size: 13px; cursor: pointer; color: var(--accent-color); border-radius: 30px; transition: 0.2s; }
-        .btn:hover { background: var(--accent-color); color: #fff; } 
-        .btn:disabled { border-color: #ccc; color: #ccc; background: #fff; cursor: default; }
+        /* Menu list style */
+        .menu-list {
+            list-style-type: none; /* Bỏ dấu chấm tròn */
+            padding-left: 0;
+            text-align: center;
+        }
+        .menu-list li {
+            margin-bottom: 8px;
+        }
 
-        footer { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
+        /* --- TÙY CHỈNH THANH CUỘN (SCROLLBAR) CHO GIỐNG TRANG GỐC --- */
+        /* Chỉ hoạt động trên Chrome, Edge, Safari (Webkit) */
         
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .body-wrapper { flex-direction: column; padding: 20px; } /* Sửa lại chỗ này cho Mobile */
-            aside { width: 100%; border-right: none; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
-            main { padding-left: 0; }
-            .site-banner { height: 150px; } /* Ảnh nhỏ lại trên điện thoại */
+        /* Chiều rộng thanh cuộn */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        /* Nền của thanh cuộn (Track) */
+        ::-webkit-scrollbar-track {
+            background: #E0D0B0; /* Màu nâu nhạt */
+        }
+        /* Thanh kéo (Thumb) */
+        ::-webkit-scrollbar-thumb {
+            background: #8B4513; /* Màu nâu đậm */
+            border: 1px solid #E0D0B0;
+        }
+        /* Khi di chuột vào thanh kéo */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A0522D;
         }
     </style>
 </head>
 <body>
 
-<script src="database.js"></script>
+    <div class="frameset-container">
+        <aside class="frame-menu" id="menu-container">
+            </aside>
 
-<div class="container">
+        <main class="frame-main" id="main-container">
+            </main>
+    </div>
+
+    <script src="database.js"></script>
     
-    <img class="site-banner" src="Akane.png" alt="Header Banner">
+    <script>
+        // Lấy nội dung từ biến DB trong database.js và gán vào các khung
+        document.getElementById('menu-container').innerHTML = DB.menuContent;
+        document.getElementById('main-container').innerHTML = DB.mainContent;
+    </script>
 
-    <div class="body-wrapper">
-        
-        <aside>
-            <h1 id="site-name" style="font-size: 24px; letter-spacing: 2px; margin-bottom: 5px; font-weight: 300; color: var(--accent-color);">LOADING...</h1>
-            <div style="font-size: 12px; margin-bottom: 30px; color: #7f8c8d; font-style: italic;">Personal Fiction Archive</div>
-            
-            <div id="btn-continue" onclick="loadProgress()">▶ Tiếp tục đọc</div>
-
-            <h3>Main Menu</h3>
-            <ul>
-                <li><a href="#" onclick="showPage('home')">Top (Trang chủ)</a></li>
-                <li><a href="#" onclick="showPage('about')">About (Giới thiệu)</a></li>
-                <li><a href="#" onclick="showPage('diary')">Diary (Nhật ký)</a></li>
-            </ul>
-
-            <h3>Novels</h3>
-            <ul id="menu-novels"></ul>
-
-            <h3>Profile</h3>
-            <div style="font-size: 13px; color: #666; line-height: 1.8;">
-                Master: <span id="admin-name" style="font-weight:bold">...</span><br>
-                Since: <span id="site-since">...</span><br>
-                Love: VN, Key
-            </div>
-        </aside>
-
-        <main>
-            <div id="view-home" class="view-section">
-                <div class="section-header">Recent Logs</div>
-                <div class="log-box" id="recent-logs"></div>
-                
-                <div class="section-header" style="margin-top: 30px;">Fiction List</div>
-                <div id="novel-list-container"></div>
-                
-                <div class="section-header" style="margin-top: 30px;">Message</div>
-                <p id="welcome-text" style="font-style: italic; color: #555;">...</p>
-            </div>
-
-            <div id="view-about" class="view-section">
-                <div class="section-header" id="intro-title">About</div>
-                <div id="intro-content" style="line-height: 2;"></div>
-            </div>
-
-            <div id="view-diary" class="view-section">
-                <div class="section-header">Diary</div>
-                <div id="diary-container"></div>
-            </div>
-
-            <div id="view-read" class="view-section">
-                <div class="nav-buttons" style="border-top: none; margin-top: 0;">
-                    <a href="#" onclick="showPage('home')">← Quay về Mục lục</a>
-                    <span id="save-status" style="font-size: 12px; color: var(--accent-color); display:none;">✔ Đã lưu</span>
-                </div>
-                <h2 id="display-title" class="chapter-title"></h2>
-                
-                <div class="nav-buttons">
-                    <button class="btn" id="btn-prev-top" onclick="prevChapter()">Chương trước</button>
-                    <button class="btn" id="btn-next-top" onclick="nextChapter()">Chương sau</button>
-                </div>
-
-                <div id="display-content" class="chapter-content"></div>
-                
-                <div class="nav-buttons">
-                    <button class="btn" id="btn-prev-btm" onclick="prevChapter()">Chương trước</button>
-                    <button class="btn" id="btn-next-btm" onclick="nextChapter()">Chương sau</button>
-                </div>
-            </div>
-        </main>
-
-    </div> </div>
-
-<script>
-    // --- HỆ THỐNG XỬ LÝ (CORE - GIỮ NGUYÊN) ---
-    document.title = SITE_CONFIG.siteName;
-    document.getElementById('site-name').innerText = SITE_CONFIG.siteName;
-    document.getElementById('admin-name').innerText = SITE_CONFIG.adminName;
-    document.getElementById('site-since').innerText = SITE_CONFIG.since;
-    document.getElementById('welcome-text').innerText = SITE_CONFIG.welcomeText;
-    document.getElementById('intro-title').innerText = SITE_CONFIG.introTitle;
-    document.getElementById('intro-content').innerHTML = SITE_CONFIG.introContent;
-
-    let currentNovelIdx = 0, currentChapterIdx = 0;
-    const STORAGE_KEY = 'syl_archive_progress';
-
-    function init() {
-        renderMenu(); renderHomeList(); renderDiary(); checkSaveData(); renderLogs();
-        showPage('home');
-    }
-
-    function renderLogs() {
-        const logBox = document.getElementById('recent-logs');
-        logBox.innerHTML = '';
-        MY_DIARY.slice(0, 5).forEach(d => {
-            logBox.innerHTML += `<div class="log-item"><span style="font-weight:bold; color:#2980b9;">${d.date}</span>: ${d.content.substring(0, 50)}...</div>`;
-        });
-    }
-
-    function renderMenu() {
-        const menu = document.getElementById('menu-novels');
-        menu.innerHTML = '';
-        MY_NOVELS.forEach((novel, index) => {
-            menu.innerHTML += `<li><a href="#" onclick="openNovel(${index}, 0)">${novel.title}</a></li>`;
-        });
-    }
-
-    function renderHomeList() {
-        const list = document.getElementById('novel-list-container');
-        list.innerHTML = '';
-        MY_NOVELS.forEach((novel, index) => {
-            list.innerHTML += `<div class="novel-list-item"><div class="novel-title"><a href="#" onclick="openNovel(${index}, 0)">${novel.title}</a></div><div class="novel-desc">${novel.desc}</div></div>`;
-        });
-    }
-
-    function renderDiary() {
-        const container = document.getElementById('diary-container');
-        container.innerHTML = '';
-        MY_DIARY.forEach(entry => {
-            container.innerHTML += `<div class="diary-entry"><div class="diary-date">${entry.date}</div><div class="diary-content">${entry.content}</div></div>`;
-        });
-    }
-
-    function showPage(pageId) {
-        document.querySelectorAll('.view-section').forEach(p => p.style.display = 'none');
-        document.getElementById('view-' + pageId).style.display = 'block';
-        window.scrollTo(0,0);
-    }
-
-    function openNovel(nIdx, cIdx) {
-        currentNovelIdx = nIdx; currentChapterIdx = cIdx;
-        renderReadingView(); saveProgress();
-    }
-
-    function renderReadingView() {
-        showPage('read');
-        const novel = MY_NOVELS[currentNovelIdx];
-        const chapter = novel.chapters[currentChapterIdx];
-        document.getElementById('display-title').innerText = `${novel.title} - ${chapter.title}`;
-        document.getElementById('display-content').innerText = chapter.content;
-        
-        const isFirst = (currentChapterIdx === 0);
-        const isLast = (currentChapterIdx === novel.chapters.length - 1);
-        document.getElementById('btn-prev-top').disabled = isFirst; document.getElementById('btn-prev-btm').disabled = isFirst;
-        document.getElementById('btn-next-top').disabled = isLast; document.getElementById('btn-next-btm').disabled = isLast;
-    }
-
-    function nextChapter() { if(currentChapterIdx < MY_NOVELS[currentNovelIdx].chapters.length -1) { currentChapterIdx++; renderReadingView(); saveProgress(); } }
-    function prevChapter() { if(currentChapterIdx > 0) { currentChapterIdx--; renderReadingView(); saveProgress(); } }
-
-    function saveProgress() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ n: currentNovelIdx, c: currentChapterIdx }));
-        const s = document.getElementById('save-status'); s.style.display='inline'; setTimeout(()=>s.style.display='none', 2000); checkSaveData();
-    }
-    function checkSaveData() { document.getElementById('btn-continue').style.display = localStorage.getItem(STORAGE_KEY) ? 'block' : 'none'; }
-    function loadProgress() { 
-        const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if(d && MY_NOVELS[d.n]) openNovel(d.n, d.c);
-    }
-
-    init();
-</script>
 </body>
 </html>
-
