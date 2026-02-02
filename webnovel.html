@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đang tải...</title>
+    <style>
+        /* --- PHONG CÁCH CỔ ĐIỂN (RETRO STYLE) --- */
+        body { font-family: "Tahoma", "Verdana", sans-serif; font-size: 14px; line-height: 1.6; color: #333; background-color: #f0f0f0; margin: 0; padding: 20px; }
+        a { color: #2b5f8e; text-decoration: none; } a:hover { color: #d35400; text-decoration: underline; }
+        
+        /* LAYOUT CHÍNH */
+        .container { max-width: 900px; margin: 0 auto; background: #fff; border: 1px solid #ccc; padding: 20px; display: flex; min-height: 80vh; }
+        
+        /* CỘT TRÁI (MENU) */
+        aside { width: 200px; padding-right: 20px; border-right: 1px dotted #999; flex-shrink: 0; }
+        aside h3 { font-size: 12px; border-bottom: 1px solid #ddd; margin-bottom: 5px; color: #555; }
+        aside ul { list-style: square; padding-left: 20px; margin-bottom: 20px; }
+        aside li { margin-bottom: 5px; }
+        
+        /* Nút Tiếp tục đọc */
+        #btn-continue { display: none; background: #fff3cd; color: #856404; padding: 5px; border: 1px solid #ffeeba; text-align: center; margin-bottom: 15px; cursor: pointer; font-weight: bold; }
+        
+        /* CỘT PHẢI (NỘI DUNG) */
+        main { flex-grow: 1; padding-left: 20px; position: relative; }
+
+        /* CÁC THÀNH PHẦN NỘI DUNG */
+        .section-header { border-left: 5px solid #2b5f8e; padding-left: 10px; background: #f9f9f9; margin: 0 0 10px 0; font-weight: bold; font-size: 15px; }
+        .log-box { height: 150px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; font-size: 12px; margin-bottom: 20px; font-family: monospace; }
+        .log-item { border-bottom: 1px dashed #eee; padding: 2px 0; }
+        
+        .novel-list-item { margin-bottom: 10px; border-bottom: 1px dotted #eee; padding-bottom: 5px; }
+        .novel-title { font-weight: bold; font-size: 16px; }
+        .novel-desc { font-size: 12px; color: #666; margin-left: 15px; }
+        
+        .diary-entry { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .diary-date { background: #2b5f8e; color: #fff; padding: 2px 8px; font-weight: bold; display: inline-block; font-size: 12px; border-radius: 3px; }
+        .diary-content { margin-top: 10px; text-align: justify; white-space: pre-wrap; }
+        
+        /* GIAO DIỆN ĐỌC TRUYỆN */
+        .view-section { display: none; }
+        .chapter-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .chapter-content { font-size: 16px; line-height: 1.8; text-align: justify; margin-bottom: 30px; white-space: pre-wrap; }
+        .nav-buttons { display: flex; justify-content: space-between; margin: 20px 0; border-top: 1px dotted #ccc; padding-top: 10px; }
+        .btn { background: #eee; border: 1px solid #ccc; padding: 5px 15px; font-size: 12px; cursor: pointer; color: #333; font-family: "Tahoma", sans-serif; }
+        .btn:hover { background: #ddd; } .btn:disabled { color: #aaa; cursor: default; }
+
+        footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<script src="database.js"></script>
+
+<div class="container">
+    <aside>
+        <h1 id="site-name" style="font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold;">LOADING...</h1>
+        <div style="font-size: 11px; margin-bottom: 20px;">Personal Fiction Archive</div>
+        
+        <div id="btn-continue" onclick="loadProgress()">▶ Tiếp tục đọc</div>
+
+        <h3>MAIN MENU</h3>
+        <ul>
+            <li><a href="#" onclick="showPage('home')">Top (Trang chủ)</a></li>
+            <li><a href="#" onclick="showPage('about')">About (Giới thiệu)</a></li>
+            <li><a href="#" onclick="showPage('diary')">Diary (Nhật ký)</a></li>
+        </ul>
+
+        <h3>NOVELS</h3>
+        <ul id="menu-novels"></ul>
+
+        <h3>PROFILE</h3>
+        <div style="font-size: 12px; color: #555;">
+            Master: <span id="admin-name">...</span><br>
+            Since: <span id="site-since">...</span><br>
+            Love: VN, Key
+        </div>
+    </aside>
+
+    <main>
+        <div id="view-home" class="view-section">
+            <div class="section-header">Recent Logs</div>
+            <div class="log-box" id="recent-logs"></div> <div class="section-header">Fiction List</div>
+            <div id="novel-list-container"></div>
+            
+            <div class="section-header">Message</div>
+            <p id="welcome-text">...</p>
+        </div>
+
+        <div id="view-about" class="view-section">
+            <div class="section-header" id="intro-title">About</div>
+            <div id="intro-content"></div>
+        </div>
+
+        <div id="view-diary" class="view-section">
+            <div class="section-header">Diary</div>
+            <div id="diary-container"></div>
+        </div>
+
+        <div id="view-read" class="view-section">
+            <div class="nav-buttons">
+                <a href="#" onclick="showPage('home')">[ Quay về Mục lục ]</a>
+                <span id="save-status" style="font-size: 11px; color: green; display:none;">✔ Đã lưu</span>
+            </div>
+            <h2 id="display-title" class="chapter-title"></h2>
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev-top" onclick="prevChapter()">« Trước</button>
+                <button class="btn" id="btn-next-top" onclick="nextChapter()">Sau »</button>
+            </div>
+            <div id="display-content" class="chapter-content"></div>
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev-btm" onclick="prevChapter()">« Trước</button>
+                <button class="btn" id="btn-next-btm" onclick="nextChapter()">Sau »</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- HỆ THỐNG XỬ LÝ (CORE) ---
+    // Không chứa dữ liệu rác, chỉ có Logic thuần túy
+    
+    // 1. Load Cấu hình từ database.js
+    document.title = SITE_CONFIG.siteName;
+    document.getElementById('site-name').innerText = SITE_CONFIG.siteName;
+    document.getElementById('admin-name').innerText = SITE_CONFIG.adminName;
+    document.getElementById('site-since').innerText = SITE_CONFIG.since;
+    document.getElementById('welcome-text').innerText = SITE_CONFIG.welcomeText;
+    document.getElementById('intro-title').innerText = SITE_CONFIG.introTitle;
+    document.getElementById('intro-content').innerHTML = SITE_CONFIG.introContent;
+
+    // 2. Logic Chính
+    let currentNovelIdx = 0, currentChapterIdx = 0;
+    const STORAGE_KEY = 'syl_archive_progress';
+
+    function init() {
+        renderMenu(); renderHomeList(); renderDiary(); checkSaveData(); renderLogs();
+        showPage('home'); // Mặc định vào trang chủ
+    }
+
+    // Tự động lấy 5 nhật ký mới nhất hiển thị ra trang chủ làm "Recent Logs"
+    function renderLogs() {
+        const logBox = document.getElementById('recent-logs');
+        logBox.innerHTML = '';
+        MY_DIARY.slice(0, 5).forEach(d => {
+            logBox.innerHTML += `<div class="log-item"><span style="font-weight:bold">${d.date}</span>: ${d.content.substring(0, 50)}...</div>`;
+        });
+    }
+
+    function renderMenu() {
+        const menu = document.getElementById('menu-novels');
+        menu.innerHTML = '';
+        MY_NOVELS.forEach((novel, index) => {
+            menu.innerHTML += `<li><a href="#" onclick="openNovel(${index}, 0)">${novel.title}</a></li>`;
+        });
+    }
+
+    function renderHomeList() {
+        const list = document.getElementById('novel-list-container');
+        list.innerHTML = '';
+        MY_NOVELS.forEach((novel, index) => {
+            list.innerHTML += `<div class="novel-list-item"><div class="novel-title"><a href="#" onclick="openNovel(${index}, 0)">■ ${novel.title}</a></div><div class="novel-desc">${novel.desc}</div></div>`;
+        });
+    }
+
+    function renderDiary() {
+        const container = document.getElementById('diary-container');
+        container.innerHTML = '';
+        MY_DIARY.forEach(entry => {
+            container.innerHTML += `<div class="diary-entry"><div class="diary-date">${entry.date}</div><div class="diary-content">${entry.content}</div></div>`;
+        });
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.view-section').forEach(p => p.style.display = 'none');
+        document.getElementById('view-' + pageId).style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    function openNovel(nIdx, cIdx) {
+        currentNovelIdx = nIdx; currentChapterIdx = cIdx;
+        renderReadingView(); saveProgress();
+    }
+
+    function renderReadingView() {
+        showPage('read');
+        const novel = MY_NOVELS[currentNovelIdx];
+        const chapter = novel.chapters[currentChapterIdx];
+        document.getElementById('display-title').innerText = `${novel.title} - ${chapter.title}`;
+        document.getElementById('display-content').innerText = chapter.content;
+        
+        const isFirst = (currentChapterIdx === 0);
+        const isLast = (currentChapterIdx === novel.chapters.length - 1);
+        document.getElementById('btn-prev-top').disabled = isFirst; document.getElementById('btn-prev-btm').disabled = isFirst;
+        document.getElementById('btn-next-top').disabled = isLast; document.getElementById('btn-next-btm').disabled = isLast;
+    }
+
+    function nextChapter() { if(currentChapterIdx < MY_NOVELS[currentNovelIdx].chapters.length -1) { currentChapterIdx++; renderReadingView(); saveProgress(); } }
+    function prevChapter() { if(currentChapterIdx > 0) { currentChapterIdx--; renderReadingView(); saveProgress(); } }
+
+    function saveProgress() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ n: currentNovelIdx, c: currentChapterIdx }));
+        const s = document.getElementById('save-status'); s.style.display='inline'; setTimeout(()=>s.style.display='none', 2000); checkSaveData();
+    }
+    function checkSaveData() { document.getElementById('btn-continue').style.display = localStorage.getItem(STORAGE_KEY) ? 'block' : 'none'; }
+    function loadProgress() { 
+        const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if(d && MY_NOVELS[d.n]) openNovel(d.n, d.c);
+    }
+
+    // Bắt đầu chạy
+    init();
+</script>
+</body>
+</html>
