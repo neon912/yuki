@@ -5,47 +5,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đang tải...</title>
     <style>
-        /* --- PHONG CÁCH CỔ ĐIỂN (RETRO STYLE) --- */
-        body { font-family: "Tahoma", "Verdana", sans-serif; font-size: 14px; line-height: 1.6; color: #333; background-color: #f0f0f0; margin: 0; padding: 20px; }
-        a { color: #2b5f8e; text-decoration: none; } a:hover { color: #d35400; text-decoration: underline; }
+        /* --- CẤU HÌNH MÀU SẮC (THEME) --- */
+        :root {
+            --bg-body: #e3f2fd;       /* Màu nền tổng thể (Xanh mây trời) */
+            --bg-container: #ffffff;  /* Màu nền khung nội dung */
+            --text-main: #2c3e50;     /* Màu chữ chính (Xanh đen dịu mắt) */
+            --accent-color: #2980b9;  /* Màu điểm nhấn (Xanh biển đậm) */
+            --accent-hover: #e74c3c;  /* Màu khi di chuột (Cam đỏ) */
+            --border-soft: #ecf0f1;   /* Đường kẻ mờ */
+            --shadow: 0 10px 25px rgba(41, 128, 185, 0.15); /* Hiệu ứng bóng mờ */
+        }
+
+        /* --- PHONG CÁCH CHUNG --- */
+        body { 
+            font-family: "Segoe UI", "Tahoma", sans-serif; /* Font hiện đại hơn xíu nhưng vẫn giữ nét xưa */
+            font-size: 15px; /* Tăng cỡ chữ lên 1 chút cho dễ đọc */
+            line-height: 1.7; 
+            color: var(--text-main); 
+            background-color: var(--bg-body); 
+            margin: 0; padding: 40px 20px; /* Tăng khoảng cách lề */
+            background-image: linear-gradient(to bottom, #e3f2fd, #fdfbf7); /* Hiệu ứng nền chuyển màu nhẹ */
+            min-height: 100vh;
+        }
+
+        a { color: var(--accent-color); text-decoration: none; transition: 0.2s; font-weight: 500; }
+        a:hover { color: var(--accent-hover); }
         
-        /* LAYOUT CHÍNH */
-        .container { max-width: 900px; margin: 0 auto; background: #fff; border: 1px solid #ccc; padding: 20px; display: flex; min-height: 80vh; }
+        /* --- LAYOUT CHÍNH (RỘNG HƠN & MỀM MẠI HƠN) --- */
+        .container { 
+            max-width: 1100px; /* Mở rộng chiều ngang */
+            margin: 0 auto; 
+            background: var(--bg-container); 
+            border-radius: 12px; /* Bo tròn góc */
+            padding: 40px; 
+            display: flex; 
+            min-height: 80vh; 
+            box-shadow: var(--shadow); /* Đổ bóng thay vì viền cứng */
+        }
         
-        /* CỘT TRÁI (MENU) */
-        aside { width: 200px; padding-right: 20px; border-right: 1px dotted #999; flex-shrink: 0; }
-        aside h3 { font-size: 12px; border-bottom: 1px solid #ddd; margin-bottom: 5px; color: #555; }
-        aside ul { list-style: square; padding-left: 20px; margin-bottom: 20px; }
-        aside li { margin-bottom: 5px; }
+        /* --- CỘT TRÁI (MENU) --- */
+        aside { 
+            width: 240px; /* Rộng hơn chút */
+            padding-right: 30px; 
+            border-right: 1px solid var(--border-soft); 
+            flex-shrink: 0; 
+        }
+        
+        aside h3 { 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent-color); 
+            padding-bottom: 5px;
+            margin-bottom: 15px; 
+            color: var(--accent-color); 
+            margin-top: 30px;
+        }
+
+        aside ul { list-style: none; padding-left: 0; margin-bottom: 20px; }
+        aside li { 
+            margin-bottom: 8px; 
+            padding-left: 10px;
+            border-left: 3px solid transparent;
+            transition: 0.2s;
+        }
+        aside li:hover {
+            border-left: 3px solid var(--accent-hover);
+            background-color: #fafafa;
+        }
         
         /* Nút Tiếp tục đọc */
-        #btn-continue { display: none; background: #fff3cd; color: #856404; padding: 5px; border: 1px solid #ffeeba; text-align: center; margin-bottom: 15px; cursor: pointer; font-weight: bold; }
+        #btn-continue { 
+            display: none; 
+            background: #fff8e1; color: #f39c12; 
+            padding: 10px; border-radius: 6px; 
+            text-align: center; margin-bottom: 25px; cursor: pointer; font-weight: bold; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #fae5d3;
+        }
+        #btn-continue:hover { transform: translateY(-2px); }
         
-        /* CỘT PHẢI (NỘI DUNG) */
-        main { flex-grow: 1; padding-left: 20px; position: relative; }
+        /* --- CỘT PHẢI (NỘI DUNG) --- */
+        main { flex-grow: 1; padding-left: 40px; position: relative; }
 
-        /* CÁC THÀNH PHẦN NỘI DUNG */
-        .section-header { border-left: 5px solid #2b5f8e; padding-left: 10px; background: #f9f9f9; margin: 0 0 10px 0; font-weight: bold; font-size: 15px; }
-        .log-box { height: 150px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; font-size: 12px; margin-bottom: 20px; font-family: monospace; }
-        .log-item { border-bottom: 1px dashed #eee; padding: 2px 0; }
+        /* HEADER CỦA TỪNG MỤC */
+        .section-header { 
+            font-size: 22px; 
+            color: var(--accent-color);
+            margin: 0 0 20px 0; 
+            font-weight: 300; /* Nét mảnh sang trọng */
+            border-bottom: 1px solid var(--border-soft);
+            padding-bottom: 10px;
+        }
+
+        /* KHUNG LOG */
+        .log-box { 
+            height: 160px; overflow-y: scroll; 
+            background: #f8f9fa; border-radius: 6px;
+            border: 1px solid var(--border-soft); 
+            padding: 15px; font-size: 13px; margin-bottom: 30px; 
+            font-family: Consolas, monospace; color: #555;
+        }
+        .log-item { border-bottom: 1px dashed #ddd; padding: 4px 0; }
         
-        .novel-list-item { margin-bottom: 10px; border-bottom: 1px dotted #eee; padding-bottom: 5px; }
-        .novel-title { font-weight: bold; font-size: 16px; }
-        .novel-desc { font-size: 12px; color: #666; margin-left: 15px; }
+        /* DANH SÁCH TRUYỆN */
+        .novel-list-item { 
+            margin-bottom: 15px; 
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-soft);
+            transition: 0.2s;
+        }
+        .novel-list-item:hover {
+            border-color: var(--accent-color);
+            background-color: #fbfdff;
+        }
+
+        .novel-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+        .novel-desc { font-size: 14px; color: #7f8c8d; margin-left: 0; line-height: 1.5; }
         
-        .diary-entry { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .diary-date { background: #2b5f8e; color: #fff; padding: 2px 8px; font-weight: bold; display: inline-block; font-size: 12px; border-radius: 3px; }
-        .diary-content { margin-top: 10px; text-align: justify; white-space: pre-wrap; }
+        /* NHẬT KÝ */
+        .diary-entry { 
+            margin-bottom: 30px; 
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-soft); 
+        }
+        .diary-date { 
+            background: var(--accent-color); color: #fff; 
+            padding: 4px 10px; font-weight: bold; display: inline-block; 
+            font-size: 12px; border-radius: 20px; 
+        }
+        .diary-content { margin-top: 15px; text-align: justify; white-space: pre-wrap; color: #444; }
         
         /* GIAO DIỆN ĐỌC TRUYỆN */
-        .view-section { display: none; }
-        .chapter-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .chapter-content { font-size: 16px; line-height: 1.8; text-align: justify; margin-bottom: 30px; white-space: pre-wrap; }
-        .nav-buttons { display: flex; justify-content: space-between; margin: 20px 0; border-top: 1px dotted #ccc; padding-top: 10px; }
-        .btn { background: #eee; border: 1px solid #ccc; padding: 5px 15px; font-size: 12px; cursor: pointer; color: #333; font-family: "Tahoma", sans-serif; }
-        .btn:hover { background: #ddd; } .btn:disabled { color: #aaa; cursor: default; }
+        .view-section { display: none; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+        .chapter-title { 
+            text-align: center; font-size: 26px; color: var(--accent-color);
+            margin-bottom: 40px; font-weight: normal;
+        }
+        .chapter-content { 
+            font-size: 18px; /* Chữ to đọc cho sướng */
+            line-height: 1.9; 
+            text-align: justify; margin-bottom: 50px; white-space: pre-wrap; 
+            color: #222;
+        }
+        
+        /* NÚT ĐIỀU HƯỚNG */
+        .nav-buttons { display: flex; justify-content: space-between; margin: 30px 0; padding-top: 20px; border-top: 1px dashed #ddd; }
+        .btn { 
+            background: #fff; border: 1px solid var(--accent-color); 
+            padding: 8px 20px; font-size: 13px; cursor: pointer; 
+            color: var(--accent-color); border-radius: 30px;
+            transition: 0.2s;
+        }
+        .btn:hover { background: var(--accent-color); color: #fff; } 
+        .btn:disabled { border-color: #ccc; color: #ccc; background: #fff; cursor: default; }
+
+        footer { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
+        
+        /* RESPONSIVE: Để xem đẹp trên điện thoại */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 20px; }
+            aside { width: 100%; border-right: none; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
+            main { padding-left: 0; }
+        }
     </style>
 </head>
 <body>
@@ -54,24 +181,24 @@
 
 <div class="container">
     <aside>
-        <h1 id="site-name" style="font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold;">LOADING...</h1>
-        <div style="font-size: 11px; margin-bottom: 20px;">Personal Fiction Archive</div>
+        <h1 id="site-name" style="font-size: 24px; letter-spacing: 2px; margin-bottom: 5px; font-weight: 300; color: var(--accent-color);">LOADING...</h1>
+        <div style="font-size: 12px; margin-bottom: 30px; color: #7f8c8d; font-style: italic;">Personal Fiction Archive</div>
         
         <div id="btn-continue" onclick="loadProgress()">▶ Tiếp tục đọc</div>
 
-        <h3>MAIN MENU</h3>
+        <h3>Main Menu</h3>
         <ul>
             <li><a href="#" onclick="showPage('home')">Top (Trang chủ)</a></li>
             <li><a href="#" onclick="showPage('about')">About (Giới thiệu)</a></li>
             <li><a href="#" onclick="showPage('diary')">Diary (Nhật ký)</a></li>
         </ul>
 
-        <h3>NOVELS</h3>
+        <h3>Novels</h3>
         <ul id="menu-novels"></ul>
 
-        <h3>PROFILE</h3>
-        <div style="font-size: 12px; color: #555;">
-            Master: <span id="admin-name">...</span><br>
+        <h3>Profile</h3>
+        <div style="font-size: 13px; color: #666; line-height: 1.8;">
+            Master: <span id="admin-name" style="font-weight:bold">...</span><br>
             Since: <span id="site-since">...</span><br>
             Love: VN, Key
         </div>
@@ -80,16 +207,18 @@
     <main>
         <div id="view-home" class="view-section">
             <div class="section-header">Recent Logs</div>
-            <div class="log-box" id="recent-logs"></div> <div class="section-header">Fiction List</div>
+            <div class="log-box" id="recent-logs"></div>
+            
+            <div class="section-header" style="margin-top: 30px;">Fiction List</div>
             <div id="novel-list-container"></div>
             
-            <div class="section-header">Message</div>
-            <p id="welcome-text">...</p>
+            <div class="section-header" style="margin-top: 30px;">Message</div>
+            <p id="welcome-text" style="font-style: italic; color: #555;">...</p>
         </div>
 
         <div id="view-about" class="view-section">
             <div class="section-header" id="intro-title">About</div>
-            <div id="intro-content"></div>
+            <div id="intro-content" style="line-height: 2;"></div>
         </div>
 
         <div id="view-diary" class="view-section">
@@ -98,29 +227,29 @@
         </div>
 
         <div id="view-read" class="view-section">
-            <div class="nav-buttons">
-                <a href="#" onclick="showPage('home')">[ Quay về Mục lục ]</a>
-                <span id="save-status" style="font-size: 11px; color: green; display:none;">✔ Đã lưu</span>
+            <div class="nav-buttons" style="border-top: none; margin-top: 0;">
+                <a href="#" onclick="showPage('home')">← Quay về Mục lục</a>
+                <span id="save-status" style="font-size: 12px; color: var(--accent-color); display:none;">✔ Đã lưu</span>
             </div>
             <h2 id="display-title" class="chapter-title"></h2>
+            
             <div class="nav-buttons">
-                <button class="btn" id="btn-prev-top" onclick="prevChapter()">« Trước</button>
-                <button class="btn" id="btn-next-top" onclick="nextChapter()">Sau »</button>
+                <button class="btn" id="btn-prev-top" onclick="prevChapter()">Chương trước</button>
+                <button class="btn" id="btn-next-top" onclick="nextChapter()">Chương sau</button>
             </div>
+
             <div id="display-content" class="chapter-content"></div>
+            
             <div class="nav-buttons">
-                <button class="btn" id="btn-prev-btm" onclick="prevChapter()">« Trước</button>
-                <button class="btn" id="btn-next-btm" onclick="nextChapter()">Sau »</button>
+                <button class="btn" id="btn-prev-btm" onclick="prevChapter()">Chương trước</button>
+                <button class="btn" id="btn-next-btm" onclick="nextChapter()">Chương sau</button>
             </div>
         </div>
     </main>
 </div>
 
 <script>
-    // --- HỆ THỐNG XỬ LÝ (CORE) ---
-    // Không chứa dữ liệu rác, chỉ có Logic thuần túy
-    
-    // 1. Load Cấu hình từ database.js
+    // --- HỆ THỐNG XỬ LÝ (CORE - GIỮ NGUYÊN) ---
     document.title = SITE_CONFIG.siteName;
     document.getElementById('site-name').innerText = SITE_CONFIG.siteName;
     document.getElementById('admin-name').innerText = SITE_CONFIG.adminName;
@@ -129,21 +258,19 @@
     document.getElementById('intro-title').innerText = SITE_CONFIG.introTitle;
     document.getElementById('intro-content').innerHTML = SITE_CONFIG.introContent;
 
-    // 2. Logic Chính
     let currentNovelIdx = 0, currentChapterIdx = 0;
     const STORAGE_KEY = 'syl_archive_progress';
 
     function init() {
         renderMenu(); renderHomeList(); renderDiary(); checkSaveData(); renderLogs();
-        showPage('home'); // Mặc định vào trang chủ
+        showPage('home');
     }
 
-    // Tự động lấy 5 nhật ký mới nhất hiển thị ra trang chủ làm "Recent Logs"
     function renderLogs() {
         const logBox = document.getElementById('recent-logs');
         logBox.innerHTML = '';
         MY_DIARY.slice(0, 5).forEach(d => {
-            logBox.innerHTML += `<div class="log-item"><span style="font-weight:bold">${d.date}</span>: ${d.content.substring(0, 50)}...</div>`;
+            logBox.innerHTML += `<div class="log-item"><span style="font-weight:bold; color:#2980b9;">${d.date}</span>: ${d.content.substring(0, 50)}...</div>`;
         });
     }
 
@@ -159,7 +286,7 @@
         const list = document.getElementById('novel-list-container');
         list.innerHTML = '';
         MY_NOVELS.forEach((novel, index) => {
-            list.innerHTML += `<div class="novel-list-item"><div class="novel-title"><a href="#" onclick="openNovel(${index}, 0)">■ ${novel.title}</a></div><div class="novel-desc">${novel.desc}</div></div>`;
+            list.innerHTML += `<div class="novel-list-item"><div class="novel-title"><a href="#" onclick="openNovel(${index}, 0)">${novel.title}</a></div><div class="novel-desc">${novel.desc}</div></div>`;
         });
     }
 
@@ -208,13 +335,7 @@
         if(d && MY_NOVELS[d.n]) openNovel(d.n, d.c);
     }
 
-    // Bắt đầu chạy
     init();
 </script>
 </body>
 </html>
-
-
-
-
-
