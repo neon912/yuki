@@ -1,215 +1,405 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đang tải...</title>
-    <style>
-        /* --- PHONG CÁCH CỔ ĐIỂN (RETRO STYLE) --- */
-        body { font-family: "Tahoma", "Verdana", sans-serif; font-size: 14px; line-height: 1.6; color: #333; background-color: #f0f0f0; margin: 0; padding: 20px; }
-        a { color: #2b5f8e; text-decoration: none; } a:hover { color: #d35400; text-decoration: underline; }
-        
-        /* LAYOUT CHÍNH */
-        .container { max-width: 900px; margin: 0 auto; background: #fff; border: 1px solid #ccc; padding: 20px; display: flex; min-height: 80vh; }
-        
-        /* CỘT TRÁI (MENU) */
-        aside { width: 200px; padding-right: 20px; border-right: 1px dotted #999; flex-shrink: 0; }
-        aside h3 { font-size: 12px; border-bottom: 1px solid #ddd; margin-bottom: 5px; color: #555; }
-        aside ul { list-style: square; padding-left: 20px; margin-bottom: 20px; }
-        aside li { margin-bottom: 5px; }
-        
-        /* Nút Tiếp tục đọc */
-        #btn-continue { display: none; background: #fff3cd; color: #856404; padding: 5px; border: 1px solid #ffeeba; text-align: center; margin-bottom: 15px; cursor: pointer; font-weight: bold; }
-        
-        /* CỘT PHẢI (NỘI DUNG) */
-        main { flex-grow: 1; padding-left: 20px; position: relative; }
+/* FILE DỮ LIỆU CỦA KHO LƯU TRỮ
+   Hướng dẫn:
+   - Copy file này lưu tên là: database.js
+   - Để thêm truyện mới, hãy thêm vào khu vực MY_NOVELS.
+   - Để thêm nhật ký mới, hãy thêm vào khu vực MY_DIARY.
+*/
 
-        /* CÁC THÀNH PHẦN NỘI DUNG */
-        .section-header { border-left: 5px solid #2b5f8e; padding-left: 10px; background: #f9f9f9; margin: 0 0 10px 0; font-weight: bold; font-size: 15px; }
-        .log-box { height: 150px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; font-size: 12px; margin-bottom: 20px; font-family: monospace; }
-        .log-item { border-bottom: 1px dashed #eee; padding: 2px 0; }
-        
-        .novel-list-item { margin-bottom: 10px; border-bottom: 1px dotted #eee; padding-bottom: 5px; }
-        .novel-title { font-weight: bold; font-size: 16px; }
-        .novel-desc { font-size: 12px; color: #666; margin-left: 15px; }
-        
-        .diary-entry { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .diary-date { background: #2b5f8e; color: #fff; padding: 2px 8px; font-weight: bold; display: inline-block; font-size: 12px; border-radius: 3px; }
-        .diary-content { margin-top: 10px; text-align: justify; white-space: pre-wrap; }
-        
-        /* GIAO DIỆN ĐỌC TRUYỆN */
-        .view-section { display: none; }
-        .chapter-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .chapter-content { font-size: 16px; line-height: 1.8; text-align: justify; margin-bottom: 30px; white-space: pre-wrap; }
-        .nav-buttons { display: flex; justify-content: space-between; margin: 20px 0; border-top: 1px dotted #ccc; padding-top: 10px; }
-        .btn { background: #eee; border: 1px solid #ccc; padding: 5px 15px; font-size: 12px; cursor: pointer; color: #333; font-family: "Tahoma", sans-serif; }
-        .btn:hover { background: #ddd; } .btn:disabled { color: #aaa; cursor: default; }
+const SITE_CONFIG = {
+    adminName: "Kirya Yuki",
+    siteName: "Kho lưu trữ",
+    since: "2026",
+    welcomeText: "Chào mừng bạn đến với Kho lưu trữ của Kirya Yuki. Chúc bạn có những giây phút đọc truyện vui vẻ!",
+    introTitle: "About Me",
+    introContent: `
+        <p><strong>Admin:</strong> Kirya Yuki</p>
+        <p>Đây là trang web cá nhân phi lợi nhuận.</p>
+        <p>Nơi lưu trữ các Fanfic và Blog cá nhân.</p>
+        <p>Liên hệ: kirya@example.com</p>
+    `
+};
 
-        footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
-    </style>
-</head>
-<body>
-
-<script src="database.js"></script>
-
-<div class="container">
-    <aside>
-        <h1 id="site-name" style="font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold;">LOADING...</h1>
-        <div style="font-size: 11px; margin-bottom: 20px;">Personal Fiction Archive</div>
-        
-        <div id="btn-continue" onclick="loadProgress()">▶ Tiếp tục đọc</div>
-
-        <h3>MAIN MENU</h3>
-        <ul>
-            <li><a href="#" onclick="showPage('home')">Top (Trang chủ)</a></li>
-            <li><a href="#" onclick="showPage('about')">About (Giới thiệu)</a></li>
-            <li><a href="#" onclick="showPage('diary')">Diary (Nhật ký)</a></li>
-        </ul>
-
-        <h3>NOVELS</h3>
-        <ul id="menu-novels"></ul>
-
-        <h3>PROFILE</h3>
-        <div style="font-size: 12px; color: #555;">
-            Master: <span id="admin-name">...</span><br>
-            Since: <span id="site-since">...</span><br>
-            Love: VN, Key
-        </div>
-    </aside>
-
-    <main>
-        <div id="view-home" class="view-section">
-            <div class="section-header">Recent Logs</div>
-            <div class="log-box" id="recent-logs"></div> <div class="section-header">Fiction List</div>
-            <div id="novel-list-container"></div>
-            
-            <div class="section-header">Message</div>
-            <p id="welcome-text">...</p>
-        </div>
-
-        <div id="view-about" class="view-section">
-            <div class="section-header" id="intro-title">About</div>
-            <div id="intro-content"></div>
-        </div>
-
-        <div id="view-diary" class="view-section">
-            <div class="section-header">Diary</div>
-            <div id="diary-container"></div>
-        </div>
-
-        <div id="view-read" class="view-section">
-            <div class="nav-buttons">
-                <a href="#" onclick="showPage('home')">[ Quay về Mục lục ]</a>
-                <span id="save-status" style="font-size: 11px; color: green; display:none;">✔ Đã lưu</span>
-            </div>
-            <h2 id="display-title" class="chapter-title"></h2>
-            <div class="nav-buttons">
-                <button class="btn" id="btn-prev-top" onclick="prevChapter()">« Trước</button>
-                <button class="btn" id="btn-next-top" onclick="nextChapter()">Sau »</button>
-            </div>
-            <div id="display-content" class="chapter-content"></div>
-            <div class="nav-buttons">
-                <button class="btn" id="btn-prev-btm" onclick="prevChapter()">« Trước</button>
-                <button class="btn" id="btn-next-btm" onclick="nextChapter()">Sau »</button>
-            </div>
-        </div>
-    </main>
-</div>
-
-<script>
-    // --- HỆ THỐNG XỬ LÝ (CORE) ---
-    // Không chứa dữ liệu rác, chỉ có Logic thuần túy
-    
-    // 1. Load Cấu hình từ database.js
-    document.title = SITE_CONFIG.siteName;
-    document.getElementById('site-name').innerText = SITE_CONFIG.siteName;
-    document.getElementById('admin-name').innerText = SITE_CONFIG.adminName;
-    document.getElementById('site-since').innerText = SITE_CONFIG.since;
-    document.getElementById('welcome-text').innerText = SITE_CONFIG.welcomeText;
-    document.getElementById('intro-title').innerText = SITE_CONFIG.introTitle;
-    document.getElementById('intro-content').innerHTML = SITE_CONFIG.introContent;
-
-    // 2. Logic Chính
-    let currentNovelIdx = 0, currentChapterIdx = 0;
-    const STORAGE_KEY = 'syl_archive_progress';
-
-    function init() {
-        renderMenu(); renderHomeList(); renderDiary(); checkSaveData(); renderLogs();
-        showPage('home'); // Mặc định vào trang chủ
+const MY_DIARY = [
+    { 
+        date: "2026/02/02", 
+        content: "Đã dọn dẹp lại giao diện trang web. Bây giờ mọi thứ gọn gàng hơn nhiều." 
+    },
+    { 
+        date: "2026/01/30", 
+        content: "Trời hôm nay mưa to, ngồi viết code cảm giác thật chill." 
     }
+];
 
-    // Tự động lấy 5 nhật ký mới nhất hiển thị ra trang chủ làm "Recent Logs"
-    function renderLogs() {
-        const logBox = document.getElementById('recent-logs');
-        logBox.innerHTML = '';
-        MY_DIARY.slice(0, 5).forEach(d => {
-            logBox.innerHTML += `<div class="log-item"><span style="font-weight:bold">${d.date}</span>: ${d.content.substring(0, 50)}...</div>`;
-        });
+const MY_NOVELS = [
+    {
+        id: 1,
+        title: "Summer Pockets - Ký ức",
+        desc: "Fanfic về đảo Torishirojima.",
+        chapters: [
+            { 
+                title: "Chương 1: Mở đầu", 
+                content: `Đây là nội dung chương 1.
+                
+                Bạn có thể xuống dòng thoải mái trong dấu huyền.` 
+            },
+            { 
+                title: "Chương 2: Gặp gỡ", 
+                content: `Nội dung chương 2...` 
+            }
+        ]
+    },
+    {
+        id: 2,
+        title: "Nine Half",
+        desc: "From Maidforum",
+        chapters: [
+            { 
+                title: "One Shot", 
+                content: `１
+
+　Đôi mắt ấy, ánh nhìn ấy... trong veo như băng, nhưng lại nóng bỏng đến mức làm tan chảy cả băng.
+　Vì vậy, để không bị tan chảy... dù chuyện đó chẳng thể nào xảy ra... Kohei giấu viên đá sau lưng.
+　Trên giường, thiếu nữ với mái tóc đen dài suôn mượt đang nằm đó trong tư thế trần trụi như lúc mới sinh ra.
+　Một chiếc giường ống kim loại cổ điển, giống như trong phim. Những thanh kim loại xếp dọc ở đầu và cuối giường tựa như song sắt.
+　Hai cổ tay của thiếu nữ có đôi mắt băng giá ấy bị trói vào thanh kim loại ở chính giữa.
+　Kohei cũng đang khỏa thân.
+　Cậu tiến lại bên giường, nhìn xuống cơ thể đang phơi bày của thiếu nữ.
+　Thiếu nữ nhìn cậu với tư thế hai tay vươn cao như đầu hàng... chính xác hơn, Misaki đang hướng ánh nhìn về phía Kohei như thể cô nhìn thấy tất cả.
+　Kohei chậm rãi ngậm viên đá vào miệng.
+　Cảm giác lạnh buốt như kim châm, tựa như nỗi đau, lan tỏa ra.
+　Cứ thế, Kohei leo lên giường.
+「Kohei...?」
+　Có lẽ cảm nhận được hơi người, ánh mắt Misaki di chuyển theo Kohei.
+　Gương mặt thoáng chút bất an.
+　Phải làm cho chị ấy yên tâm mới được.
+　Nghĩ những điều trái ngược với lòng mình như thế, Kohei cưỡi lên người thiếu nữ, cũng là đàn chị của mình, và ghé sát mặt vào khi vẫn đang ngậm viên đá.
+「Á!」
+　Cậu đẩy viên đá vào miệng Misaki, rồi dùng môi mình chặn lại.
+　Cậu đưa lưỡi vào, trộn lẫn viên đá với nước bọt của Misaki, rồi quấn lấy nó.
+「...Ưm...」
+　Lưỡi của Misaki cũng ngượng nghịu chuyển động, quấn lấy lưỡi Kohei.
+　Chẳng bao lâu, viên đá đã mòn hết các cạnh sắc và trở nên trơn nhẵn, Kohei hút nó ra và thu lại vào miệng mình.
+「Ưm, Kohei. Chị giật mình đấy. Tại tự nhiên em đẩy viên đá vào...」
+　Giọng nói dịu dàng đúng chất đàn chị.
+　Bỏ ngoài tai điều đó, Kohei ngậm viên đá nhô ra khoảng một nửa, rồi bất ngờ ấn nó vào đầu ngực bên trái của Misaki.
+「Á!」
+　Misaki phản xạ vặn người định tránh. Nhưng sức nặng từ hai chân cậu đang cưỡi lên, và cả hai cổ tay bị trói vào đầu giường khiến cô không thể cử động.
+「Lạnh! Lạnh quá, Kohei!」
+　Bầu ngực Misaki rung lên bần bật.
+　Như để trêu ngươi, Kohei trượt viên đá trên bầu ngực ấy.
+　Có thể thấy rõ da gà nổi lên trên ngực Misaki.
+　Đầu ngực sẫm màu cương lên, biến đổi thành hình dạng nhăn nheo săn chắc.
+　Cậu dùng viên đá vẽ những vòng xoắn ốc lên điểm cứng ngắc ấy.
+「Ưm... a...」
+　Misaki phản ứng một cách e dè.
+　Kohei tạm thời rời miệng khỏi viên đá.
+　Viên đá trượt khỏi bầu ngực Misaki và rơi xuống khe ngực.
+「Á...」
+　Cậu khéo léo dùng miệng ngậm lấy nó, và lần này di chuyển viên đá sang đầu ngực bên phải.
+「...A... hộc...」
+　Cậu dùng viên đá chọc chọc vào đó.
+「A, a」
+　Mỗi lần như thế, cơ thể cô lại giật nảy lên khe khẽ.
+　Kohei ngẩng đầu lên.
+　Misaki nhắm nghiền mắt, lặp lại những hơi thở hổn hển nặng nhọc.
+　Kohei cười nhếch mép, thả viên đá rơi xuống rốn Misaki.
+「Á á á!」
+　Cơ thể Misaki giật nảy lên dữ dội.
+　Để viên đá không bị rơi mất, Kohei chen người vào giữa hai chân Misaki.
+　Cậu chồm người tới ngậm lại viên đá.
+　Rồi cậu nắm lấy hai chân Misaki, mở rộng ra hết cỡ.
+「Không!」
+　Misaki cố vặn vẹo cơ thể.
+　Nhưng sự trói buộc ở cổ tay đã ngăn cản điều đó. Chiếc giường phát ra tiếng kẽo kẹt.
+　Kohei ghé mặt vào nơi giao nhau giữa hai đùi Misaki.
+　Dùng ngón tay nhẹ nhàng tách ra.
+　Nơi đó của Misaki đã tràn ngập sự ẩm ướt trong suốt. Những cánh hoa nhuộm màu đỏ tím bóng loáng dính bết vài sợi lông tơ.
+　Kohei từ từ ấn viên đá vào nụ mầm đỏ hồng đang nhô ra e ấp giữa khe hở của những cánh hoa.
+「Á á á!!」
+　Tiếng hét cao vút vang lên, đôi chân cô co cứng lại vì căng thẳng.
+　Dùng sức đè mạnh xuống, Kohei tiếp tục dùng viên đá hành hạ nơi đó.
+「Hư... ư... phù...」
+　Có lẽ do đã quen với cái lạnh, cơ thể Misaki dần thả lỏng.
+　Ngậm viên đá vào miệng một lần nữa, Kohei rời mặt ra.
+　Viên đá tan chảy bởi sức nóng của Misaki, nước chảy dọc theo cánh hoa, hòa lẫn với mật dịch của chính cô.
+　Do cái lạnh, hay do sức nóng, nụ mầm của Misaki sưng đỏ lên hơn bao giờ hết.
+　Sâu bên trong cánh hoa cũng ướt đẫm đến mức chưa từng thấy.
+　Kohei ghé môi vào đó, và đẩy viên đá giờ chỉ còn to bằng viên bi... vào sâu bên trong.
+「Khôngggg!」
+　Một tiếng hét lớn hơn hẳn vang lên.
+　Mặc kệ điều đó, cậu đưa lưỡi vào giữa cánh hoa, đẩy viên đá vào sâu đến mức không thể vào thêm được nữa.
+「Dừng lại đi. Lạnh, lạnh lắm, Kohei ơi...」
+「...Tuyệt thật. Sức nóng của chị đang làm tan viên đá đấy.」
+　Nói một cách cường điệu xong, Kohei áp miệng vào cánh hoa của Misaki.
+　Chùn chụt.
+　Cậu cố tình mút mát tạo ra âm thanh thô tục.
+「Đừng mà, a... đừng mút kêu tiếng như thế...」
+　Viên đá không trồi ra. Khi cậu đưa lưỡi vào, cảm giác mát lạnh truyền đến từ vách thịt gồ ghề bên trong.
+　Kohei nhổm người dậy, nhấn chìm cái ấy đang nóng hổi của mình vào giữa những cánh hoa vẫn còn vương lại hơi lạnh của Misaki.
+「A a a...!」
+「Phù... lạnh thật... thích quá, chỗ này... của chị...」
+　Vừa thì thầm, Kohei vừa di chuyển hông.
+「A... a a... ưm...」
+　Có lẽ do lạnh, bên trong Misaki thắt chặt và gồ ghề hơn bình thường.
+　Điều đó càng truyền thêm khoái cảm cho Kohei.
+「Hư... gồ ghề hơn mọi khi, thích lắm, chị à...」
+「Ưm... chị cũng... a... nóng quá... của Kohei... a a」
+　Nó thít chặt lại.
+　Như muốn hút lấy, bên trong Misaki bắt đầu co bóp.
+「A a... Kohei... chị... a... a a...」
+「Chị... em cũng... hư...」
+　Mạnh bạo, điên cuồng, mù quáng, Kohei tiếp tục khuấy đảo bên trong Misaki.
+「A không được... Kohei, a a... ra mất...!」
+「Ư... hư... a a...」
+「A... a a... a a a!」
+「Ư... ư a a!」
+
+　Tại nơi sâu nhất của Misaki, Kohei bắn ra.
+
+２
+
+「...Đau lắm đấy, Kohei.」
+　Vừa xoa cổ tay hằn vết đỏ, Misaki vừa nói giọng hờn dỗi.
+「Em chỉ làm theo lời chị nói thôi mà.」
+　Kohei nói không chút hối lỗi.
+　Misaki bĩu môi.
+「Chị đâu có bảo trói lại. Chị chỉ bảo là trời nóng nên thử dùng đá xem thế nào thôi mà...」
+「Nhưng mà, chị cũng thấy tuyệt đúng không.」
+「Cái đó... thì... đúng là vậy nhưng mà...」
+　Misaki đỏ mặt, cúi đầu xuống.
+　Thấy cô không nói lại được gì nữa, Kohei cười khúc khích.
+「Nhưng mà nè, Kohei... trói lại như thế, em muốn làm chuyện đó lắm hả?」
+「Cũng có phần... à không, tại trong phim có cảnh đó, nên em muốn thử chút thôi.」
+「Phim? ...Phim người lớn hả?」
+「Một chút thôi.」
+「...Trong phim đó, cô gái bị trói và bị trêu đùa bằng đá hả?」
+「Không, người đàn ông bị trói, và còn bị bịt mắt nữa cơ...」
+　Sau khi lỡ miệng nói ra một cách vô tư, Kohei vội lấy tay che miệng, thầm nghĩ "chết rồi".
+　Misaki đang mỉm cười tươi rói.
+「Vậy thì, lần này đến lượt Kohei nhé.」
+「Không chịu đâu.」
+　Cậu thử từ chối cho có lệ.
+　Thấy vậy, Misaki sấn tới sát bên cạnh Kohei.
+　Đặt tay lên vai Kohei để xác định vị trí, Misaki đối mặt với Kohei.
+「...Làm nhé, Kohei.」
+
+☆
+
+「...Còn lại chắc phải nhét cái gì vào miệng nữa nhỉ.」
+　Misaki nói vẻ thích thú, cô mò mẫm tìm miệng Kohei và nhét một thứ gì đó giống như vải vào trong.
+　Giống như... chứ không biết là gì. Vì cậu đang bị bịt mắt.
+　Cổ tay cậu, giống như Misaki lúc nãy, bị trói vào đầu giường.
+　Bịt mắt thì cũng giống tình trạng của Misaki.
+　Chỉ có một điểm khác biệt là chân trái của Kohei cũng bị cố định vào cạnh giường.
+「Vì sợ Kohei giãy giụa làm chị ngã khỏi giường thì nguy hiểm lắm.」
+　Trước ý kiến đó, dù không hoàn toàn đồng ý nhưng cũng thấy hợp lý, nên chính Kohei đã tự trói mình.
+　Tuy nhiên... liệu cậu có định làm gì khiến mình phải giãy giụa không nhỉ.
+...Trong lúc đang suy nghĩ điều đó thì cậu bị bịt mắt, và giờ thì bị nhét cái gì đó vào miệng.
+「Thế này được chưa... nhỉ. Kohei, trả lời thử xem.」
+　Kohei phát ra tiếng ư ử trong họng.
+「Ừm, được rồi. Vậy, bắt đầu nhé, Kohei...」
+　Đang thắc mắc làm sao cô ấy biết được rồi, thì cậu cảm nhận được Misaki đang trèo lên người mình.
+「Ở đâu nhỉ...」
+　Mái tóc dài suôn mượt của Misaki rũ xuống ngực cậu, tiếp đó, thứ gì đó giống lưỡi của Misaki chạm xuống lồng ngực Kohei.
+　Sau khi lang thang ở đó một lúc, lưỡi Misaki chạm vào đầu ngực Kohei.
+「Tìm thấy rồi...」
+　Mỗi khi lưỡi cô chuyển động, một luồng điện nhẹ chạy dọc sống lưng.
+「Lần này...」
+　Misaki trượt lưỡi xuống bụng Kohei.
+　Cảm giác tóc cọ vào người nhột nhạt.
+　Chẳng mấy chốc, má Misaki chạm vào cái ấy của Kohei.
+「...Gì đây nhỉ, cái này.」
+　Biết rõ rồi mà Misaki vẫn nói giọng trêu chọc.
+　Cái ấy của Kohei bị nắm chặt, hơi thô bạo.
+「Hi hi hi, Kohei, em đang căng thẳng đúng không.」
+　Ư ư, cậu đáp lại.
+「Chị sẽ giải tỏa căng thẳng cho em nhé...」
+　Một cảm giác ấm nóng nhớp nháp chạm vào đầu khấc nhạy cảm của Kohei, khiến cậu rùng mình.
+　Cứ thế, cô liếm láp bề mặt một cách cẩn thận như nâng niu.
+「Hư... ư...!」
+　Kohei buột miệng kêu lên.
+　Misaki dịch người, chui vào giữa hai chân Kohei.
+「Lần này thế này thì sao nhỉ...」
+　Có thứ gì đó mềm mại kẹp lấy cái ấy của Kohei.
+「Biết là gì không?」
+　Cậu lắc đầu thật mạnh để Misaki biết.
+「...Là ngực chị đấy.」
+　Ngực Misaki chỉ hơi tràn ra khỏi tay Kohei một chút, không lớn lắm.
+　Nhưng tưởng tượng đến cảnh đôi gò bồng đảo ấy đang cố gắng kẹp lấy cái của mình, ngực Kohei nóng lên vì xúc động.
+　Đột nhiên, đầu lưỡi cô lướt nhanh qua đỉnh đầu cậu nhỏ.
+　Cơ thể cậu run lên theo cảm giác ấy.
+「Hi hi, giật rồi kìa, giật rồi kìa.」
+　Bầu ngực Misaki cố gắng bao bọc lấy cái ấy của Kohei.
+　Nhưng có lẽ vì kích thước, dù thử bao nhiêu lần cũng không thành công.
+「Không được rồi... đành vậy.」
+　Sự mềm mại tuyệt vời ấy rời đi.
+　Thay vào đó là lòng bàn tay Misaki.
+　Cô bắt đầu tuốt lên xuống bằng động tác thành thạo.
+「Ư hư... ư...」
+　Có lẽ dư âm lúc nãy vẫn còn, cảm giác quá độ chạy dọc tủy sống Kohei. Cậu định ưỡn người lên để trốn chạy, nhưng chân trái bị trói đã ngăn lại.
+　Hi hi hi, Misaki cười.
+　Tay dừng lại.
+　Hơi ấm da thịt thay thế vào đó.
+　Có lẽ miệng Misaki đang ngậm lấy nó.
+「Ư ư...」
+「Phù... a... của Kohei, nóng quá...」
+　Lưỡi trượt từ đỉnh xuống thân.
+　Rồi lại quay trở lại, lưỡi di chuyển nhớp nháp như đang liếm kem.
+　Tay lại bao lấy cái ấy của Kohei, bắt đầu tuốt một cách cẩn thận.
+　Bên trong Kohei, thứ gì đó đang cuộn trào.
+　Có lẽ do bị bịt mắt, cậu cảm nhận mọi thứ nhạy cảm hơn bình thường.
+　Nhưng lòng tự trọng của Kohei ra lệnh phải chịu đựng.
+　Vì vậy, dù đã sát giới hạn, Kohei vẫn gồng cứng người, cố gắng kìm nén.
+「...Nào, mở chân ra nhé, Kohei.」
+　Misaki ôm lấy chân phải đang tự do của Kohei, định mở rộng ra.
+　Cậu định dùng sức kháng cự. Nhưng ở tư thế này có thể sẽ đá trúng Misaki.
+　Nén sự xấu hổ, Kohei ngoan ngoãn nghe theo Misaki.
+　Tay Misaki bò dọc theo đùi cậu.
+　Điều đó tạo ra một khoảng nghỉ cho khoái cảm, Kohei thở phào nhẹ nhõm.
+　Thế rồi, ngón tay Misaki áp vào cửa động phía sau của Kohei.
+　Ngón tay trơn tuột chui vào.
+「Á á!」
+「Nào, thả lỏng ra đi, Kohei.」
+　Misaki nói vui vẻ, ngón tay càng xâm phạm sâu hơn vào Kohei.
+「Hư... a... ư ư... a...」
+　Muốn trốn thoát khỏi cảm giác dị vật, Kohei cố ưỡn người ra sau.
+　Nhưng cả về vật lý lẫn tinh thần đều không thể làm được.
+　Ít nhất để dễ chịu hơn, Kohei lắc hông tới lui trong phạm vi có thể.
+　Hi hi, Misaki cười.
+　Giọng nói ấy nghe cứ như ác quỷ.
+　Cái ấy của Kohei đang cương cứng bị bỏ mặc nãy giờ lại được đưa vào miệng Misaki.
+　Nó bị tuốt ra trơn tuột, rồi bị mút tạo tiếng chùn chụt.
+　Dục vọng kìm nén bấy lâu bùng nổ trong Kohei.
+「Ư hư... hư...」
+「Được rồi, ra đi, Kohei...」
+「...Ư ư... ư a a!」
+...Canh đúng lúc nó nằm gọn trong miệng Misaki, Kohei phóng thích.
+　Misaki mút cho đến khi cậu bắn hết hoàn toàn.
+　Xong xuôi, ngón tay bên trong cũng được rút ra.
+　Kohei nằm vật ra, chìm trong dư âm.
+　Cảm thấy Misaki chuyển động.
+　Miếng vải trong miệng được lấy ra.
+　Kohei ngẩng mặt lên định nói gì đó.
+　Nhưng không chậm trễ một giây, miệng Misaki đã chặn lấy miệng cậu.
+　Thứ dịch lỏng sền sệt, đăng đắng chảy vào.
+　Cái này là...!
+「...Ưm!」
+　Cậu cố lắc đầu cự tuyệt. Nhưng Misaki giữ chặt đầu Kohei và ép sát miệng vào.
+　Cuối cùng... Kohei đành nuốt xuống.
+
+３
+
+「...Giống con gái quá cơ, Kohei à.」
+　Misaki nói có vẻ khoái trá.
+　Kohei đang quay lưng lại với Misaki.
+　Misaki vuốt ve tấm lưng ấy nhẹ nhàng.
+「Không ngon lắm đúng không, cái đó... nhưng mà, là của Kohei mà...」
+　Nói rồi, trán Misaki chạm vào lưng cậu, tay vòng ra trước người Kohei, ôm chặt lấy.
+「Chị yêu em... Kohei...」
+「...Bất công.」
+　Kohei lật người lại cái rụp.
+　Misaki đang ngơ ngác vì hành động bất ngờ đó.
+「Bất công?」
+　(Trong tiếng Nhật, "Bất công" là "Fukouhei", chơi chữ với tên Kohei)
+「Đúng, bất công.」
+　Kohei nói như một đứa trẻ đang cãi nhau.
+「Tại sao?」
+　Nghiêng đầu, Misaki hỏi.
+「Chị, chưa bị làm ở mông.」
+「Hả...」
+　Misaki câm nín. Trên khuôn mặt cô bắt đầu thoáng nét lo lắng.
+「Cho nên là...」
+　Nhanh chóng đổi tư thế, Kohei vòng ra sau lưng Misaki.
+　Cậu ôm lấy cô bắt cô chống tay quỳ gối, rồi ghé mặt vào đó.
+「Ơ, em đùa đúng không...」
+　Từ khe hở đang khép chặt, cánh hoa của Misaki e ấp lộ ra.
+　Cố tình không để ý đến chỗ đó, Kohei đặt tay lên hai ngọn đồi trắng ngần phía sau.
+「Nè, nè, đùa thôi đúng không, thôi đi mà.」
+　Khi tách rộng ra, nụ hoa của Misaki hiện ra, hầu như không có màu sắc gì thẫm.
+　Ghé sát mặt, cậu đưa lưỡi về phía đó.
+「Á, không được, bẩn đấy, Kohei!」
+　Misaki lắc người định trốn. Trông cô có vẻ thực sự không thích.
+　Nhưng Kohei nói khẽ.
+「Là của chị mà... không bẩn đâu.」
+「Kohei...」
+...Cơ thể Misaki thả lỏng.
+　Kohei liếm nụ hoa ấy, liếm đi liếm lại nhiều lần.
+「Ư... cảm giác lạ quá...」
+　Hơi thở Misaki trở nên gấp gáp.
+　Kohei ấn ngón trỏ vào.
+　Vẽ vòng tròn quanh nụ hoa đang ướt đẫm nước bọt.
+　Và rồi, cậu từ từ ấn ngón tay vào sâu.
+「...A a...」
+　Tiếng thở dài ngọt ngào của Misaki.
+　Kohei bắt đầu cử động ngón tay.
+「A... ư... a a...」
+「Thế nào hả chị?」
+「Lạ lắm... không biết có sướng hay không nữa...」
+　Chẳng mấy chốc, sự thắt chặt của nụ hoa đã nới lỏng hơn.
+　Cảm nhận được điều đó, Kohei cho thêm ngón giữa vào cùng ngón trỏ, nhẹ nhàng nhấn sâu vào trong.
+「Á á...!」
+　Cơ thể cô giật nảy, nụ hoa thít chặt lại.
+「A... ư... ư ư... ừm...!」
+　Dịch trong suốt chảy dọc xuống đùi Misaki.
+　Nhìn cảnh tượng đó, tim Kohei đập thình thịch.
+「Chị à...」
+　Cậu nhìn vào mặt Misaki đầy vẻ quan tâm.
+　Misaki, với đôi má đỏ bừng và vẻ mặt rối bời, mỉm cười và hôn Kohei.
+「Kohei... được rồi. Tới đi em...」
+「Vâng... đợi em chút nhé, chị...」
+...Kohei đeo một lớp màng mỏng vào cái ấy của mình.
+　Misaki vẫn giữ nguyên tư thế đó, chỉ quay mặt về phía Kohei.
+　Kohei trở lại chỗ Misaki, vừa ôm lấy cơ thể cô, vừa đè người mình lên.
+「Được chưa chị...」
+「Ưm, được rồi...」
+　Kohei từ từ, thận trọng nhấn chìm nó vào nụ hoa của Misaki.
+「Ư ư...」
+　Dù có sự thắt chặt và kháng cự mạnh mẽ, cái ấy của Kohei dần dần lấp đầy cơ thể Misaki.
+「Chị ổn không?」
+「Ưm, cũng tàm tạm... ư... phù...」
+　Cảm thấy lực cản ở phía sâu, Kohei dừng lại không tiến thêm nữa.
+「Chị...」
+「A a... sao thế, Kohei?」
+　Misaki toát mồ hôi hột nhưng vẫn mỉm cười đáp lại. Dáng vẻ cố gắng che giấu sự chịu đựng của cô trông thật đáng yêu.
+「Em yêu chị, chị à...」
+「Chị cũng yêu em, Kohei...」
+　Kohei ôm lấy eo Misaki, và bắt đầu di chuyển hông.
+「A a! ...A a a! ...」
+　Những âm thanh không thành tiếng phát ra từ miệng Misaki.
+　Kohei cũng vậy.
+　Cảm giác tội lỗi đầy kích thích khi xâm phạm vào nơi không được phép.
+　Sự thắt chặt mãnh liệt chưa từng biết đến.
+　Tất cả những điều đó khiến Kohei nhanh chóng đạt đến giới hạn.
+「Chị à... em, sắp...」
+「Ưm, được rồi, Kohei... ra đi...」
+「...Hư... á... a a a...!」
+...Cơ thể Kohei rũ xuống, cậu gục đầu lên vai Misaki.
+「Kohei...」
+　Misaki quay lại với tay tìm mặt Kohei và đặt tay lên má cậu.
+　Kohei lấy lại bình tĩnh, nhìn vào mặt Misaki.
+　Tóc bết vào trán vì mồ hôi.
+　Cậu thấy nước mắt trào ra từ khóe mắt cô.
+「Chị... em xin...」
+　Lời nói ấy bị ngón tay Misaki chặn lại.
+　「Đừng nói câu đó. Nói ra lại thấy giống như làm chuyện gì xấu xa lắm ấy.」
+　Kohei chỉ biết trả lời "Vâng".
+
+...Dọn dẹp xong xuôi, Kohei quấn mình trong chăn.
+　Cơ thể nhỏ nhắn của Misaki nép sát vào đó.
+「...Không thắng nổi chị nhỉ...」
+　Nhìn lơ đãng lên trần nhà, Kohei lẩm bẩm.
+　Hi hi hi, Misaki cười.
+　Kohei chuyển ánh nhìn sang Misaki.
+「Dễ thương thật... nhưng quả nhiên vẫn là người lớn hơn nhỉ, chị.」
+「Đàn chị dễ thương, em ghét hả?」
+　Nghe câu đó, Kohei ôm chặt lấy Misaki.
+「Làm gì có. Em yêu lắm, bà chị dễ thương ạ.」
+「Ừm, là chị mà, nên hãy trân trọng chị mãi nhé. Hứa đấy.」
+　Kohei cướp lấy đôi môi Misaki.
+　Và lần này, không phải bằng ngón tay mà bằng đầu lưỡi quấn quýt, họ trao nhau lời thề ước.
+
+[Nine-Half End]` 
+            }
+        ]
     }
-
-    function renderMenu() {
-        const menu = document.getElementById('menu-novels');
-        menu.innerHTML = '';
-        MY_NOVELS.forEach((novel, index) => {
-            menu.innerHTML += `<li><a href="#" onclick="openNovel(${index}, 0)">${novel.title}</a></li>`;
-        });
-    }
-
-    function renderHomeList() {
-        const list = document.getElementById('novel-list-container');
-        list.innerHTML = '';
-        MY_NOVELS.forEach((novel, index) => {
-            list.innerHTML += `<div class="novel-list-item"><div class="novel-title"><a href="#" onclick="openNovel(${index}, 0)">■ ${novel.title}</a></div><div class="novel-desc">${novel.desc}</div></div>`;
-        });
-    }
-
-    function renderDiary() {
-        const container = document.getElementById('diary-container');
-        container.innerHTML = '';
-        MY_DIARY.forEach(entry => {
-            container.innerHTML += `<div class="diary-entry"><div class="diary-date">${entry.date}</div><div class="diary-content">${entry.content}</div></div>`;
-        });
-    }
-
-    function showPage(pageId) {
-        document.querySelectorAll('.view-section').forEach(p => p.style.display = 'none');
-        document.getElementById('view-' + pageId).style.display = 'block';
-        window.scrollTo(0,0);
-    }
-
-    function openNovel(nIdx, cIdx) {
-        currentNovelIdx = nIdx; currentChapterIdx = cIdx;
-        renderReadingView(); saveProgress();
-    }
-
-    function renderReadingView() {
-        showPage('read');
-        const novel = MY_NOVELS[currentNovelIdx];
-        const chapter = novel.chapters[currentChapterIdx];
-        document.getElementById('display-title').innerText = `${novel.title} - ${chapter.title}`;
-        document.getElementById('display-content').innerText = chapter.content;
-        
-        const isFirst = (currentChapterIdx === 0);
-        const isLast = (currentChapterIdx === novel.chapters.length - 1);
-        document.getElementById('btn-prev-top').disabled = isFirst; document.getElementById('btn-prev-btm').disabled = isFirst;
-        document.getElementById('btn-next-top').disabled = isLast; document.getElementById('btn-next-btm').disabled = isLast;
-    }
-
-    function nextChapter() { if(currentChapterIdx < MY_NOVELS[currentNovelIdx].chapters.length -1) { currentChapterIdx++; renderReadingView(); saveProgress(); } }
-    function prevChapter() { if(currentChapterIdx > 0) { currentChapterIdx--; renderReadingView(); saveProgress(); } }
-
-    function saveProgress() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ n: currentNovelIdx, c: currentChapterIdx }));
-        const s = document.getElementById('save-status'); s.style.display='inline'; setTimeout(()=>s.style.display='none', 2000); checkSaveData();
-    }
-    function checkSaveData() { document.getElementById('btn-continue').style.display = localStorage.getItem(STORAGE_KEY) ? 'block' : 'none'; }
-    function loadProgress() { 
-        const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if(d && MY_NOVELS[d.n]) openNovel(d.n, d.c);
-    }
-
-    // Bắt đầu chạy
-    init();
-</script>
-</body>
-</html>
+];
