@@ -3,130 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYL (Retro Style)</title>
+    <title>Kho lưu trữ ONE</title>
     <style>
-        /* --- THIẾT LẬP CHUNG (RESET CSS) --- */
-        html, body {
-            height: 100%; /* Bắt buộc để giả lập frameset */
-            margin: 0;
-            padding: 0;
-            background-color: #F5F5DC; /* Màu nền vàng kem đặc trưng của trang gốc */
-            color: #333; /* Màu chữ tối */
-            /* Sử dụng font có chân (Serif) để giống trang gốc và hỗ trợ tốt tiếng Việt.
-               Ưu tiên Times New Roman, sau đó đến các font mặc định của hệ thống.
-            */
-            font-family: "Times New Roman", Times, serif;
-            font-size: 14px; /* Cỡ chữ nhỏ kiểu cũ */
-            overflow: hidden; /* Ẩn thanh cuộn của body chính */
+        /* --- CẤU HÌNH CƠ BẢN --- */
+        body {
+            /* Màu nền vàng lá rẻ quạt giống ảnh */
+            background-color: #eecfa1; 
+            /* Nếu bạn có ảnh nền lá rẻ quạt, thay link vào dưới đây */
+            /* background-image: url('hinh-nen-la.jpg'); */
+            font-family: "Times New Roman", Times, serif; /* Font có chân cổ điển */
+            margin: 0; padding: 20px;
         }
 
-        a {
-            color: #0000EE; /* Màu link xanh cổ điển */
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-            color: #FF0000;
+        /* --- CẤU TRÚC BẢNG (TABLE) --- */
+        .main-table {
+            width: 900px; /* Độ rộng bảng */
+            margin: 0 auto; /* Căn giữa màn hình */
+            border-collapse: collapse; /* Liền mạch các đường kẻ */
+            background-color: #f0f0f0; /* Nền bảng màu xám nhạt */
+            border: 2px solid #000; /* Viền ngoài cùng màu đen */
         }
 
-        ul {
-            padding-left: 20px;
-            margin: 10px 0;
+        /* Kẻ khung cho từng ô */
+        .main-table th, .main-table td {
+            border: 1px solid #000; /* Đường kẻ đen mỏng */
+            padding: 5px 10px;
+            font-size: 14px;
         }
+
+        /* --- MÀU SẮC CÁC HÀNG --- */
         
-        h2, h3 {
-            margin-top: 15px;
-            margin-bottom: 10px;
+        /* Hàng tiêu đề trên cùng (Màu xanh rêu nhạt) */
+        .header-top {
+            background-color: #cbb; 
+            text-align: center;
             font-weight: bold;
         }
 
-        /* --- CẤU TRÚC GIẢ LẬP FRAMESET (LAYOUT) --- */
-        .frameset-container {
-            display: flex; /* Sử dụng Flexbox để chia cột */
-            height: 100%; /* Chiều cao full màn hình */
-            width: 100%;
+        /* Hàng tiêu đề lớn (ONE ~Radiant Season~) */
+        .header-title {
+            background-color: #f0f0f0;
+            color: #d00; /* Chữ màu đỏ */
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
         }
 
-        /* Khung bên trái (Menu) */
-        .frame-menu {
-            width: 180px; /* Chiều rộng cố định giống trang gốc */
-            flex-shrink: 0; /* Không bị co lại */
-            height: 100%;
-            overflow-y: auto; /* Cho phép cuộn dọc độc lập */
-            border-right: 2px solid #8B4513; /* Đường viền nâu ngăn cách */
-            padding: 15px;
-            box-sizing: border-box;
-            background-color: #F5F5DC;
+        /* Hàng tên nhân vật (Misaki - Màu xanh dương nhạt) */
+        .header-char {
+            background-color: #dcebf5; /* Màu xanh nhạt giống ảnh */
+            color: #00f; /* Chữ xanh dương đậm */
+            text-align: center;
+            font-weight: bold;
         }
 
-        /* Khung bên phải (Nội dung chính) */
-        .frame-main {
-            flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
-            height: 100%;
-            overflow-y: auto; /* Cho phép cuộn dọc độc lập */
-            padding: 20px 30px;
-            box-sizing: border-box;
-            background-color: #F5F5DC;
+        /* Cột bên phải (Tên nhân vật / Tác giả) */
+        .col-info {
+            background-color: #dcebf5; /* Màu xanh nhạt */
+            text-align: center;
+            vertical-align: middle; /* Căn giữa theo chiều dọc */
         }
 
-        /* --- CÁC YẾU TỐ TRANG TRÍ ĐẶC TRƯNG --- */
-        
-        /* Đường kẻ ngang nét đứt màu nâu */
-        .dashed-line {
-            border: none;
-            border-top: 1px dashed #8B4513;
-            margin: 15px 0;
+        /* Cột ngày tháng (Màu xám) */
+        .col-date {
+            background-color: #e0e0e0;
+            text-align: center;
+            font-size: 12px;
         }
 
-        /* Menu list style */
-        .menu-list {
-            list-style-type: none; /* Bỏ dấu chấm tròn */
-            padding-left: 0;
+        /* Link truyện */
+        a {
+            text-decoration: underline;
+            color: #000; /* Màu đen */
+            cursor: pointer;
+        }
+        a:hover {
+            color: #d00; /* Di chuột vào đổi màu đỏ */
+        }
+
+        /* Căn giữa chữ trong ô tên truyện */
+        .story-title {
             text-align: center;
         }
-        .menu-list li {
-            margin-bottom: 8px;
-        }
 
-        /* --- TÙY CHỈNH THANH CUỘN (SCROLLBAR) CHO GIỐNG TRANG GỐC --- */
-        /* Chỉ hoạt động trên Chrome, Edge, Safari (Webkit) */
-        
-        /* Chiều rộng thanh cuộn */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-        /* Nền của thanh cuộn (Track) */
-        ::-webkit-scrollbar-track {
-            background: #E0D0B0; /* Màu nâu nhạt */
-        }
-        /* Thanh kéo (Thumb) */
-        ::-webkit-scrollbar-thumb {
-            background: #8B4513; /* Màu nâu đậm */
-            border: 1px solid #E0D0B0;
-        }
-        /* Khi di chuột vào thanh kéo */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #A0522D;
-        }
     </style>
 </head>
 <body>
 
-    <div class="frameset-container">
-        <aside class="frame-menu" id="menu-container">
-            </aside>
+    <table class="main-table">
+        <tr class="header-top">
+            <td style="width: 40%">Tiêu đề (Title)</td>
+            <td style="width: 25%">Nhân vật (Chara)</td>
+            <td style="width: 20%">Tác giả (Author)</td>
+            <td style="width: 15%">Ngày (Date)</td>
+        </tr>
 
-        <main class="frame-main" id="main-container">
-            </main>
-    </div>
+        <tr>
+            <td colspan="4" class="header-title">ONE ~Radiant Season~ SS</td>
+        </tr>
 
-    <script src="database.js"></script>
-    
-    <script>
-        // Lấy nội dung từ biến DB trong database.js và gán vào các khung
-        document.getElementById('menu-container').innerHTML = DB.menuContent;
-        document.getElementById('main-container').innerHTML = DB.mainContent;
-    </script>
+        <tr>
+            <td colspan="4" class="header-char">Misaki</td>
+        </tr>
+
+        <tr>
+            <td class="story-title">
+                <a href="dao.html">Con đường (Michi)</a>
+            </td>
+            
+            <td rowspan="8" class="col-info">
+                Kawana Misaki<br>
+                <span style="font-size:11px">Hai người sau khi trở về</span>
+            </td>
+            
+            <td rowspan="8" class="col-info">KOH</td>
+            <td class="col-date">1999/12/30</td>
+        </tr>
+
+        <tr>
+            <td class="story-title"><a href="#">Con chó (Inu)</a></td>
+            <td class="col-date">1998/12/12</td>
+        </tr>
+        <tr>
+            <td class="story-title"><a href="#">Hoa anh đào (Sakura)</a></td>
+            <td class="col-date">1998/12/19</td>
+        </tr>
+        <tr>
+            <td class="story-title"><a href="#">Mưa (Ame)</a></td>
+            <td class="col-date">1999/01/05</td>
+        </tr>
+         <tr>
+            <td class="story-title"><a href="#">Ngày cuối của Misaki</a></td>
+            <td class="col-date">1999/01/09</td>
+        </tr>
+         <tr>
+            <td class="story-title"><a href="#">Ngoại truyện - Tuyết</a></td>
+            <td class="col-date">1999/04/05</td>
+        </tr>
+         <tr>
+            <td class="story-title"><a href="#">Ngoại truyện - Vọng</a></td>
+            <td class="col-date">1999/12/30</td>
+        </tr>
+         <tr>
+            <td class="story-title"><a href="#">Ngoại truyện - Khánh</a></td>
+            <td class="col-date">2001/07/29</td>
+        </tr>
+
+        <tr>
+            <td colspan="4" class="header-char">Cha-Cha</td>
+        </tr>
+        <tr>
+            <td class="story-title"><a href="#">Cha-Cha - 1 -</a></td>
+            <td rowspan="2" class="col-info">Kawana Misaki</td>
+            <td rowspan="2" class="col-info">KOH</td>
+            <td class="col-date">1998/12/16</td>
+        </tr>
+        <tr>
+            <td class="story-title"><a href="#">Cha-Cha - 2 -</a></td>
+            <td class="col-date">2000/04/23</td>
+        </tr>
+
+    </table>
 
 </body>
 </html>
