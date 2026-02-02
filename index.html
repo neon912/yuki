@@ -15,6 +15,22 @@
             margin: 0; padding: 20px;
         }
 
+        /* --- [MỚI] PHẦN CHỨA ẢNH ĐẦU TRANG --- */
+        .banner-container {
+            width: 900px; /* Bằng chiều rộng bảng */
+            margin: 0 auto 10px auto; /* Căn giữa và cách bảng 10px */
+            border: 2px solid #000; /* Viền đen cho giống bảng */
+            background-color: #fff; /* Nền trắng nếu ảnh bị hụt */
+        }
+        
+        .banner-img {
+            width: 100%; /* Ảnh giãn đầy khung 900px */
+            height: auto; /* Tự chỉnh chiều cao theo tỉ lệ ảnh */
+            display: block; /* Loại bỏ khoảng trắng thừa dưới ảnh */
+            object-fit: cover; /* Cắt ảnh vừa khung nếu cần */
+            max-height: 300px; /* [Tùy chọn] Giới hạn chiều cao để ảnh không quá to */
+        }
+        
         /* --- CẤU TRÚC BẢNG (TABLE) --- */
         .main-table {
             width: 900px; /* Độ rộng bảng */
@@ -84,13 +100,17 @@
 
         /* Căn giữa chữ trong ô tên truyện */
         .story-title {
-            text-align: center;
+            text-align: center; background-color: #f0f8ff;
         }
 
     </style>
 </head>
 <body>
 
+    <div class="banner-container">
+        <img src="Akane.png" alt="Banner Website" class="banner-img">
+    </div>
+    
     <table class="main-table">
         <tr class="header-top">
             <td style="width: 40%">Tiêu đề</td>
@@ -187,6 +207,7 @@
 
 </body>
 </html>
+
 
 
 
